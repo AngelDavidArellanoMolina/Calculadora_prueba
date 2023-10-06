@@ -8,6 +8,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import java.text.DecimalFormat;
+import java.util.Objects;
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -35,10 +38,10 @@ public class MainActivity extends AppCompatActivity {
         Button ocho = findViewById(R.id.ocho);
         Button nueve = findViewById(R.id.nueve);
         Button cero = findViewById(R.id.cero);
-        final int[] primerNumero = new int[1];
-        final int[] segundoNumero = new int[1];
+        final double[] primerNumero = new double[1];
+        final double[] segundoNumero = new double[1];
         final String[] operacion = new String[1];
-
+        operacion[0] = "";
 
         cero.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -110,11 +113,27 @@ public class MainActivity extends AppCompatActivity {
                 result.setText(result.getText().toString() + "9");
             }
         });
+        coma.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d("Botón pulsado: ", coma.getText().toString());
+                if (result.getText().toString() != null) {
+                    result.setText(result.getText().toString() + ".");
+                } else if (result.getText().toString() == null ||
+                        Objects.equals(result.getText().toString(), "0")) {
+                    result.setText("0.");
+                }
+            }
+        });
         ac.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.d("Botón pulsado: ", ac.getText().toString());
                 result.setText("");
+                numArriba.setText("");
+                primerNumero[0] = Double.NaN;
+                segundoNumero[0] = Double.NaN;
+                operacion[0] = "";
             }
         });
         masmenos.setOnClickListener(new View.OnClickListener() {
@@ -124,7 +143,11 @@ public class MainActivity extends AppCompatActivity {
 
                 if (result.getText().toString().contains("-")) {
                     result.setText(result.getText().toString().replace("-", ""));
-                } else {
+                } else if (result.getText().toString().equals("") ||
+                        result.getText().toString().equals("0")){
+                    result.setText("0");
+                }
+                else {
                     result.setText("-" + result.getText().toString());
                 }
             }
@@ -133,15 +156,17 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Log.d("Botón pulsado: ", porcentaje.getText().toString());
-                result.setText("No hay nada bellaco");
+                result.setText("Hazlo puto vago");
             }
         });
         mas.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.d("Botón pulsado: ", mas.getText().toString());
-                primerNumero[0] = Integer.parseInt(result.getText().toString());
-                numArriba.setText(String.valueOf(primerNumero[0]));
+                primerNumero[0] = Double.parseDouble(result.getText().toString());
+                String texto = (primerNumero[0] % 1 == 0) ?
+                        String.valueOf((int) primerNumero[0]) : String.valueOf(primerNumero[0]);
+                numArriba.setText(texto + " +");
                 operacion[0] = "+";
                 result.setText("");
             }
@@ -150,8 +175,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Log.d("Botón pulsado: ", menos.getText().toString());
-                primerNumero[0] = Integer.parseInt(result.getText().toString());
-                numArriba.setText(String.valueOf(primerNumero[0]));
+                primerNumero[0] = Double.parseDouble(result.getText().toString());
+                String texto = (primerNumero[0] % 1 == 0) ?
+                        String.valueOf((int) primerNumero[0]) : String.valueOf(primerNumero[0]);
+                numArriba.setText(texto + " -");
                 operacion[0] = "-";
                 result.setText("");
             }
@@ -160,8 +187,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Log.d("Botón pulsado: ", multiplicacion.getText().toString());
-                primerNumero[0] = Integer.parseInt(result.getText().toString());
-                numArriba.setText(String.valueOf(primerNumero[0]));
+                primerNumero[0] = Double.parseDouble(result.getText().toString());
+                String texto = (primerNumero[0] % 1 == 0) ?
+                        String.valueOf((int) primerNumero[0]) : String.valueOf(primerNumero[0]);
+                numArriba.setText(texto + " ×");
                 operacion[0] = "x";
                 result.setText("");
             }
@@ -170,8 +199,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Log.d("Botón pulsado: ", division.getText().toString());
-                primerNumero[0] = Integer.parseInt(result.getText().toString());
-                numArriba.setText(String.valueOf(primerNumero[0]));
+                primerNumero[0] = Double.parseDouble(result.getText().toString());
+                String texto = (primerNumero[0] % 1 == 0) ?
+                        String.valueOf((int) primerNumero[0]) : String.valueOf(primerNumero[0]);
+                numArriba.setText(texto + " /");
                 operacion[0] = "/";
                 result.setText("");
             }
@@ -180,26 +211,54 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Log.d("Botón pulsado: ", igual.getText().toString());
-                segundoNumero[0] = Integer.parseInt(result.getText().toString());
-                switch (operacion[0]) {
-                    case "+":
-                        result.setText(String.valueOf(segundoNumero[0] + primerNumero[0]));
-                        break;
-                    case "-":
-                        result.setText(String.valueOf(segundoNumero[0] - primerNumero[0]));
-                        break;
-                    case "x":
-                        result.setText(String.valueOf(segundoNumero[0] * primerNumero[0]));
-                        break;
-                    case "/":
-                        result.setText(String.valueOf(primerNumero[0] / segundoNumero[0]));
-                        break;
-                    default:
-                        result.setText("Error");
-                        break;
+                if (!operacion[0].equals("")) {
+                    Double resultado;
+                    String texto;
+
+                    segundoNumero[0] = Double.parseDouble(result.getText().toString());
+                    switch (operacion[0]) {
+                        case "+":
+                            resultado = segundoNumero[0] + primerNumero[0];
+                            texto = (resultado % 1 == 0) ?
+                                    String.valueOf((int) Math.round(resultado)) :
+                                    String.valueOf(resultado);
+                            result.setText(texto);
+                            operacion[0] = "";
+                            break;
+                        case "-":
+                            resultado = segundoNumero[0] - primerNumero[0];
+                            texto = (resultado % 1 == 0) ?
+                                    String.valueOf((int) Math.round(resultado)) :
+                                    String.valueOf(resultado);
+                            result.setText(texto);
+                            operacion[0] = "";
+                            break;
+                        case "x":
+                            resultado = segundoNumero[0] * primerNumero[0];
+                            texto = (resultado % 1 == 0) ?
+                                    String.valueOf((int) Math.round(resultado)) :
+                                    String.valueOf(resultado);
+                            result.setText(texto);
+                            operacion[0] = "";
+                            break;
+                        case "/":
+                            resultado = primerNumero[0] / segundoNumero[0];
+                            DecimalFormat df = new DecimalFormat("#.####");
+                            texto = (resultado % 1 == 0) ?
+                                    String.valueOf((int) Math.round(resultado)) :
+                                    String.valueOf(df.format(resultado));
+                            result.setText(texto);
+                            operacion[0] = "";
+                            break;
+                        default:
+                            result.setText("Error");
+                            break;
+                    }
+                    numArriba.setText("");
                 }
-                numArriba.setText("");
-            }
+
+            };
+
         });
     }
 }
