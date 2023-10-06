@@ -47,7 +47,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Log.d("Botón pulsado: ", cero.getText().toString());
-                result.setText(result.getText().toString() + "0");
+                if (!result.getText().toString().equals("")) {
+                    result.setText(result.getText().toString() + "0");
+                } else {
+                    result.setText("");
+                }
             }
         });
         uno.setOnClickListener(new View.OnClickListener() {
@@ -117,11 +121,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Log.d("Botón pulsado: ", coma.getText().toString());
-                if (result.getText().toString() != null) {
-                    result.setText(result.getText().toString() + ".");
-                } else if (result.getText().toString() == null ||
-                        Objects.equals(result.getText().toString(), "0")) {
-                    result.setText("0.");
+                if (!result.getText().toString().contains(".")) {
+                    if (!result.getText().toString().isEmpty()) {
+                        result.setText(result.getText().toString() + ".");
+                    } else if (result.getText().toString().isEmpty() ||
+                            Objects.equals(result.getText().toString(), "0")) {
+                        result.setText("0.");
+                    }
                 }
             }
         });
@@ -145,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
                     result.setText(result.getText().toString().replace("-", ""));
                 } else if (result.getText().toString().equals("") ||
                         result.getText().toString().equals("0")){
-                    result.setText("0");
+                    result.setText("");
                 }
                 else {
                     result.setText("-" + result.getText().toString());
@@ -156,7 +162,18 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Log.d("Botón pulsado: ", porcentaje.getText().toString());
-                result.setText("Hazlo puto vago");
+                if (!result.getText().toString().isEmpty()) {
+                    if (!Double.isNaN(primerNumero[0])) {
+                        Double prueba = Double.parseDouble(result.getText().toString());
+                        segundoNumero[0] = primerNumero[0] * prueba * 0.01;
+                        result.setText(String.valueOf(segundoNumero[0]));
+                    } else {
+                        primerNumero[0] = Double.parseDouble(result.getText().toString()) * 0.01;
+                        result.setText(String.valueOf(primerNumero[0]));
+                    }
+                } else {
+                    result.setText("+");
+                }
             }
         });
         mas.setOnClickListener(new View.OnClickListener() {
@@ -214,6 +231,8 @@ public class MainActivity extends AppCompatActivity {
                 if (!operacion[0].equals("")) {
                     Double resultado;
                     String texto;
+                    DecimalFormat df = new DecimalFormat("#.####");
+
 
                     segundoNumero[0] = Double.parseDouble(result.getText().toString());
                     switch (operacion[0]) {
@@ -221,15 +240,15 @@ public class MainActivity extends AppCompatActivity {
                             resultado = segundoNumero[0] + primerNumero[0];
                             texto = (resultado % 1 == 0) ?
                                     String.valueOf((int) Math.round(resultado)) :
-                                    String.valueOf(resultado);
+                                    String.valueOf(df.format(resultado));
                             result.setText(texto);
                             operacion[0] = "";
                             break;
                         case "-":
-                            resultado = segundoNumero[0] - primerNumero[0];
+                            resultado = primerNumero[0] - segundoNumero[0];
                             texto = (resultado % 1 == 0) ?
                                     String.valueOf((int) Math.round(resultado)) :
-                                    String.valueOf(resultado);
+                                    String.valueOf(df.format(resultado));
                             result.setText(texto);
                             operacion[0] = "";
                             break;
@@ -237,13 +256,12 @@ public class MainActivity extends AppCompatActivity {
                             resultado = segundoNumero[0] * primerNumero[0];
                             texto = (resultado % 1 == 0) ?
                                     String.valueOf((int) Math.round(resultado)) :
-                                    String.valueOf(resultado);
+                                    String.valueOf(df.format(resultado));
                             result.setText(texto);
                             operacion[0] = "";
                             break;
                         case "/":
                             resultado = primerNumero[0] / segundoNumero[0];
-                            DecimalFormat df = new DecimalFormat("#.####");
                             texto = (resultado % 1 == 0) ?
                                     String.valueOf((int) Math.round(resultado)) :
                                     String.valueOf(df.format(resultado));
@@ -256,9 +274,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     numArriba.setText("");
                 }
-
-            };
-
+            }
         });
     }
 }
