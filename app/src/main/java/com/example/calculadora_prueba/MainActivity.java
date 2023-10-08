@@ -47,10 +47,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Log.d("Botón pulsado: ", cero.getText().toString());
-                if (!result.getText().toString().equals("")) {
-                    result.setText(result.getText().toString() + "0");
+
+                if (result.getText().toString().equals("")) {
+                    result.setText("0");
                 } else {
-                    result.setText("");
+                    result.setText(result.getText().toString() + "0");
                 }
             }
         });
